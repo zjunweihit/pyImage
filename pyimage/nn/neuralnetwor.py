@@ -38,7 +38,7 @@ class NeuralNetwork:
 
 
     def fit(self, X, y, epochs=1000, updatePerEpoch=100):
-        # each x has a bias with correponding W vector.
+        # append a bias column(each x has a bias with correponding W vector).
         X = np.c_[X, np.ones((X.shape[0]))]
 
         for epoch in np.arange(0, epochs):
@@ -87,4 +87,23 @@ class NeuralNetwork:
 
         # == update weight ==
         for layer in np.arange(0, len(self.W)):
+            # this is the gradient descent
             self.W[layer] += -self.alpha * act_outputs[layer].T.dot(deltas[layer])
+
+
+    def predict(self, X, addBias=True):
+        p = np.atleast_2d(X)
+        if addBias == True:
+            p = np.c_[p, np.ones((p.shape[0]))]
+
+        for layer in np.arange(0, len(self.W)):
+            # echo layer: input * W -> activation func
+            p = self.sigmoid(np.dot(p, self.W[layer]))
+        return p
+
+
+    def calculate_loss(self, X, label):
+        label = np.atleast_2d(label)
+        pred = self.predict(X, False)
+        loss = 0.5 * np.sum((pred - label) ** 2)
+        return loss
