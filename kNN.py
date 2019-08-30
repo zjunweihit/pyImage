@@ -5,7 +5,7 @@ from sklearn.metrics import classification_report
 from imutils import paths
 import argparse
 
-from pyimage.preprocessing.preprocessor import Preprocessor
+from pyimage.preprocessing.resize import ResizePreprocessor
 from pyimage.datasets.datasetloader import DatasetLoader
 
 ap = argparse.ArgumentParser()
@@ -25,7 +25,7 @@ print("[INFO] loading images...")
 # in the same folder the images will be listed out of order
 imagePaths = list(paths.list_images(args["dataset"]))
 
-p = Preprocessor(32, 32)
+p = ResizePreprocessor(32, 32)
 loader = DatasetLoader(preprocessors=[p])
 (data, labels) = loader.load(imagePaths, verbose=500)
 data = data.reshape((data.shape[0], 3072)) # 32*32*3

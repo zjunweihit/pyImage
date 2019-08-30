@@ -2,7 +2,7 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from imutils import paths
-from pyimage.preprocessing.preprocessor import Preprocessor
+from pyimage.preprocessing.resize import ResizePreprocessor
 from pyimage.datasets.datasetloader import DatasetLoader
 import argparse
 
@@ -14,7 +14,7 @@ args = vars(ap.parse_args())
 print("[INFO] loading images...")
 
 images = list(paths.list_images(args["dataset"]))
-p = Preprocessor(32, 32)
+p = ResizePreprocessor(32, 32)
 loader = DatasetLoader(preprocessors=[p])
 (data, labels) = loader.load(images, verbose=500)
 data = data.reshape((data.shape[0], 3072))

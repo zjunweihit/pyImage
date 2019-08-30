@@ -5,7 +5,7 @@
 
 import cv2
 
-class Preprocessor:
+class ResizePreprocessor:
     def __init__(self, width, height, inter=cv2.INTER_AREA):
         self.width = width
         self.height = height
