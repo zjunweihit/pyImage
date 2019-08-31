@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class HistoryPlot:
-    def __init__(self, style, epochs):
+    def __init__(self, epochs, style = "ggplot"):
         self.style = style
         self.epochs = epochs
 

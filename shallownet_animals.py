@@ -45,5 +45,5 @@ print(classification_report(testY.argmax(axis=1),
                             pred.argmax(axis=1),
                             target_names=['cat', 'dog', 'panda']))
 
-hp = HistoryPlot("ggplot", N_epoch)
+hp = HistoryPlot(N_epoch)
 hp.show(H)

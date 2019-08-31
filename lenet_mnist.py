@@ -49,5 +49,5 @@ print(classification_report(y_test.argmax(axis=1),
                             pred.argmax(axis=1),
                             target_names=[str(x) for x in np.arange(0, 10)]))
 
-hp = HistoryPlot("ggplot", 20)
+hp = HistoryPlot(20)
 hp.show(H)
