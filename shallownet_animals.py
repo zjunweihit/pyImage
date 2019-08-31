@@ -5,10 +5,9 @@ from pyimage.preprocessing.resize import ResizePreprocessor
 from pyimage.preprocessing.imagetoarray import ImageToArrayPreprocessor
 from pyimage.datasets.datasetloader import DatasetLoader
 from pyimage.nn.conv.shallownet import ShallowNet
+from pyimage.plot.historyplot import HistoryPlot
 from keras.optimizers import SGD
 from imutils import paths
-import matplotlib.pyplot as plt
-import numpy as np
 import argparse
 
 ap = argparse.ArgumentParser()
@@ -46,14 +45,5 @@ print(classification_report(testY.argmax(axis=1),
                             pred.argmax(axis=1),
                             target_names=['cat', 'dog', 'panda']))
 
-plt.style.use("ggplot")
-plt.figure()
-plt.plot(np.arange(0, N_epoch), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, N_epoch), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, N_epoch), H.history["acc"], label="train_acc")
-plt.plot(np.arange(0, N_epoch), H.history["val_acc"], label="val_acc")
-plt.title("Training Loss and Accuracy")
-plt.xlabel("Epoch #")
-plt.ylabel("Loss/Accuracy")
-plt.legend()
-plt.show()
+hp = HistoryPlot("ggplot", N_epoch)
+hp.show(H)

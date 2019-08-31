@@ -1,12 +1,9 @@
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from pyimage.nn.conv.shallownet import ShallowNet
 from keras.optimizers import SGD
 from keras.datasets import cifar10
-from imutils import paths
-import matplotlib.pyplot as plt
-import numpy as np
+from pyimage.plot.historyplot import HistoryPlot
 
 
 print("[INFO] loading CIFAR-10 data...")
@@ -34,14 +31,5 @@ print(classification_report(testY.argmax(axis=1),
                             pred.argmax(axis=1),
                             target_names=labelNames))
 
-plt.style.use("ggplot")
-plt.figure()
-plt.plot(np.arange(0, N_epoch), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, N_epoch), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, N_epoch), H.history["acc"], label="train_acc")
-plt.plot(np.arange(0, N_epoch), H.history["val_acc"], label="val_acc")
-plt.title("Training Loss and Accuracy")
-plt.xlabel("Epoch #")
-plt.ylabel("Loss/Accuracy")
-plt.legend()
-plt.show()
+hp = HistoryPlot("ggplot", N_epoch)
+hp.show(H)
