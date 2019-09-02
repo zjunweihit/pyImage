@@ -14,7 +14,6 @@ from keras.preprocessing.image import load_img
 import numpy as np
 import argparse
 import cv2
-import matplotlib.pyplot as plt
 
 # Models for image classification with weights trained on ImageNet:
 # https://keras.io/applications/
@@ -30,14 +29,6 @@ import matplotlib.pyplot as plt
 #     DenseNet
 #     NASNet
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", required=True,
-                help="path to the input image")
-ap.add_argument("-m", "--model", type=str, default="vgg16",
-                help="name of pre-trained network to use."
-                     " e.g. resnet, vgg16, vgg19, xception, inception, all")
-args = vars(ap.parse_args())
-
 MODELS = {
     "vgg16": VGG16,
     "vgg19": VGG19,
@@ -47,7 +38,15 @@ MODELS = {
     "mobilenet": MobileNet,
 }
 
-def classify_image(imageFile, modelType=args["model"], getProbility=False):
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required=True,
+                help="path to the input image")
+ap.add_argument("-m", "--model", type=str, default="all",
+                help="name of pre-trained network to use."
+                     " e.g. one of {}".format(MODELS.keys()))
+args = vars(ap.parse_args())
+
+def classify_image(imageFile, modelType=args["model"]):
     if modelType not in MODELS.keys():
         raise AssertionError("The --model argument '{}' is not support!".format(args["model"]))
 
@@ -88,35 +87,34 @@ def classify_image(imageFile, modelType=args["model"], getProbility=False):
     for (i, (imagenetID, label, prob)) in enumerate(P[0]):
         print("{}. {}: {:.2f}%".format(i + 1, label, prob * 100))
 
-    if getProbility == True:
-        return P[0][0]
-    else:
-        (imagenetID, label, prob) = P[0][0]
-        img = cv2.imread(imageFile)
-        cv2.putText(img, "{}: {}, {:.2f}%".format(modelType, label, prob * 100),
-                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6, (0, 255, 0), 2)
-        cv2.imshow("Classification", img)
-        cv2.waitKey(0)
+    return P[0][0]
 
 
-if args["model"] != "all":
-    # general process
-    classify_image(args["image"])
-else:
+def putText(img, type, lable, prob, i):
+    cv2.putText(img,                                                # image
+                "{}: {}, {:.2f}%".format(type, label, prob * 100),  # Text
+                (10, 20 * i),                                       # lefttop position
+                cv2.FONT_HERSHEY_SIMPLEX,                           # font
+                0.6,                                                # fontsize
+                (0, 255, 0),                                        # color (B, G, R)
+                2)                                                  # thickness (int only)
+
+
+if args["model"] == "all":
     # compare the results of all types
-    i = 1
-    img = cv2.imread(args["image"])
-    for type in MODELS.keys():
-        #(imagenetID, label, prob)  = (1, "abc", 0.55)
-        (imagenetID, label, prob)  = classify_image(args["image"], type, getProbility=True)
-        cv2.putText(img,                                                # image
-                    "{}: {}, {:.2f}%".format(type, label, prob * 100),  # Text
-                    (10, 20 * i),                                       # lefttop position
-                    cv2.FONT_HERSHEY_SIMPLEX,                           # font
-                    0.6,                                                # fontsize
-                    (0, 255, 0),                                        # color (B, G, R)
-                    2)                                                  # thickness (int only)
-        i = i+1
-    cv2.imshow("Classification", img)
-    cv2.waitKey(0)
+    type_list = MODELS.keys()
+else:
+    # process the image with specified model
+    type_list = [args["model"]]
+
+i = 1
+img = cv2.imread(args["image"])
+for type in type_list:
+    #(imagenetID, label, prob) = (1, "abc", 0.55)
+    (imagenetID, label, prob)  = classify_image(args["image"], type)
+    putText(img, type, label, prob, i)
+    i = i + 1
+
+cv2.imshow("Classification", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
