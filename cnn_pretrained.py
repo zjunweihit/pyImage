@@ -110,9 +110,13 @@ else:
     for type in MODELS.keys():
         #(imagenetID, label, prob)  = (1, "abc", 0.55)
         (imagenetID, label, prob)  = classify_image(args["image"], type, getProbility=True)
-        cv2.putText(img, "{}: {}, {:.2f}%".format(type, label, prob * 100),
-                    (10, 20 * i), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6, (0, 255, 0), 2)
+        cv2.putText(img,                                                # image
+                    "{}: {}, {:.2f}%".format(type, label, prob * 100),  # Text
+                    (10, 20 * i),                                       # lefttop position
+                    cv2.FONT_HERSHEY_SIMPLEX,                           # font
+                    0.6,                                                # fontsize
+                    (0, 255, 0),                                        # color (B, G, R)
+                    2)                                                  # thickness (int only)
         i = i+1
     cv2.imshow("Classification", img)
     cv2.waitKey(0)
