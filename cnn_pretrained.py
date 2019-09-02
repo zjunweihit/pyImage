@@ -3,6 +3,7 @@ from keras.applications import InceptionV3
 from keras.applications import Xception
 from keras.applications import VGG16
 from keras.applications import VGG19
+from keras.applications import MobileNet
 
 from keras.applications import imagenet_utils
 from keras.applications.inception_v3 import preprocess_input
@@ -32,7 +33,7 @@ import matplotlib.pyplot as plt
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
                 help="path to the input image")
-ap.add_argument("-m", "--model", type=str, default="all",
+ap.add_argument("-m", "--model", type=str, default="vgg16",
                 help="name of pre-trained network to use."
                      " e.g. resnet, vgg16, vgg19, xception, inception, all")
 args = vars(ap.parse_args())
@@ -43,9 +44,10 @@ MODELS = {
     "resnet": ResNet50,
     "inception": InceptionV3,
     "xception": Xception,  # Tensorflow only
+    "mobilenet": MobileNet,
 }
 
-def classify_image(imageFile, modelType=args["model"], getImage=False):
+def classify_image(imageFile, modelType=args["model"], getProbility=False):
     if modelType not in MODELS.keys():
         raise AssertionError("The --model argument '{}' is not support!".format(args["model"]))
 
@@ -86,41 +88,31 @@ def classify_image(imageFile, modelType=args["model"], getImage=False):
     for (i, (imagenetID, label, prob)) in enumerate(P[0]):
         print("{}. {}: {:.2f}%".format(i + 1, label, prob * 100))
 
-    org = cv2.imread(imageFile)
-    (imagenetID, label, prob) = P[0][0]
-    cv2.putText(org, "[{}] Label: {}".format(modelType, label), (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
-
-    if getImage == True:
-        return org
+    if getProbility == True:
+        return P[0][0]
     else:
-        cv2.imshow("Classification", org)
+        (imagenetID, label, prob) = P[0][0]
+        img = cv2.imread(imageFile)
+        cv2.putText(img, "{}: {}, {:.2f}%".format(modelType, label, prob * 100),
+                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6, (0, 255, 0), 2)
+        cv2.imshow("Classification", img)
         cv2.waitKey(0)
+
 
 if args["model"] != "all":
     # general process
     classify_image(args["image"])
 else:
     # compare the results of all types
-    row, col = 2, 3
-
-    # debug
-    #img = classify_image(args["image"], "vgg16", getImage=True)
-    #image_list.append(("vgg16", img))
-    #img = classify_image(args["image"], "vgg19", getImage=True)
-    #image_list.append(("vgg19", img))
-
     i = 1
+    img = cv2.imread(args["image"])
     for type in MODELS.keys():
-        img = classify_image(args["image"], type, getImage=True)
-
-        plt.subplot(row, col, i)
-        plt.title(type)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # remove x, y axis ticks
-        plt.xticks([])
-        plt.yticks([])
-        plt.imshow(img)
+        #(imagenetID, label, prob)  = (1, "abc", 0.55)
+        (imagenetID, label, prob)  = classify_image(args["image"], type, getProbility=True)
+        cv2.putText(img, "{}: {}, {:.2f}%".format(type, label, prob * 100),
+                    (10, 20 * i), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6, (0, 255, 0), 2)
         i = i+1
-
-    plt.show()
+    cv2.imshow("Classification", img)
+    cv2.waitKey(0)
