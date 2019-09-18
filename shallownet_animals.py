@@ -35,7 +35,7 @@ model = ShallowNet.build(width=32, height=32, depth=3, classes=3)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
 print("[INFO] training network...")
-N_epoch = 100
+N_epoch = 40
 H = model.fit(trainX, trainY, validation_data=(testX, testY),
                     batch_size=32, epochs=N_epoch, verbose=1)
 

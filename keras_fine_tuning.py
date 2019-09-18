@@ -11,6 +11,10 @@ import argparse
 
 from keras.applications import VGG16
 from keras.layers import Input
+from keras.models import Model
+from keras.layers.core import Dropout
+from keras.layers.core import Flatten
+from keras.layers.core import Dense
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required=True,
@@ -18,6 +22,36 @@ ap.add_argument("-d", "--dataset", required=True,
 args = vars(ap.parse_args())
 
 img_row, img_col = (224, 224)
+
+def generate_model(mode):
+    if mode == "full":
+        # tune all layers
+        model = VGG16(weights=None, input_tensor=Input(shape=(img_row, img_col, 3)), classes=3)
+        # model.summary()
+    elif mode == "classifier":
+        # load the feature extraction layers
+        baseModel = VGG16(weights="imagenet", include_top=False, input_tensor=Input(shape=(img_row, img_col, 3)))
+
+        # add the classification layer, which is going to train
+        headModel = baseModel.output
+        headModel = Flatten(name="flatten")(headModel)
+        headModel = Dense(512, activation="relu")(headModel)
+        headModel = Dropout(0.5)(headModel)
+        headModel = Dense(3, activation="softmax")(headModel)
+
+        model = Model(inputs=baseModel.input, outputs=headModel)
+        # model.summary()
+
+        # freeze extraction layers
+        for layer in baseModel.layers:
+            layer.trainable = False
+    else:
+        raise ValueError("Unknown mode: {}".format(mode))
+
+    opt = SGD(lr=0.005)
+    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+    return model
+
 
 print("[INFO] loading images...")
 imageFiles = list(paths.list_images(args["dataset"]))
@@ -33,15 +67,13 @@ data = data.astype("float") / 255.0
 trainY = LabelBinarizer().fit_transform(trainY)
 testY = LabelBinarizer().fit_transform(testY)
 
-print("[INFO] compiling model...")
-opt = SGD(lr=0.005)
-model = VGG16(weights=None, input_tensor=Input(shape=(img_row, img_col, 3)), classes=3)
-#model.summary()
 
-model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+print("[INFO] compiling model...")
+
+model = generate_model("classifier")
 
 print("[INFO] training network...")
-N_epoch = 100
+N_epoch = 40
 H = model.fit(trainX, trainY, validation_data=(testX, testY),
                     batch_size=32, epochs=N_epoch, verbose=1)
 
