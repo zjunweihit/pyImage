@@ -39,7 +39,7 @@ opt = SGD(lr=0.01)
 model = LeNet.build(width=28, height=28, depth=1, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
-N_EPOCH = 10
+N_EPOCH = 20
 
 print("[INFO] training network...")
 H = model.fit(x_train, y_train, validation_data=(x_test, y_test),
