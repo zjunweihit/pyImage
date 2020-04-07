@@ -29,6 +29,11 @@ import cv2
 #     DenseNet
 #     NASNet
 
+#MODELS = {
+#    "vgg16": VGG16,
+#    #"resnet": ResNet50,
+#    #"resnet1": ResNet50,
+#}
 MODELS = {
     "vgg16": VGG16,
     "vgg19": VGG19,

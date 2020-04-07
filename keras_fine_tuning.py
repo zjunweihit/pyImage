@@ -70,7 +70,8 @@ testY = LabelBinarizer().fit_transform(testY)
 
 print("[INFO] compiling model...")
 
-model = generate_model("classifier")
+#model = generate_model("classifier")
+model = generate_model("full")
 
 print("[INFO] training network...")
 N_epoch = 40

@@ -19,6 +19,7 @@ print("[INFO] compiling model...")
 opt = SGD(lr=0.01)
 model = ShallowNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+model.summary()
 
 print("[INFO] training network...")
 N_epoch = 40

@@ -39,9 +39,11 @@ opt = SGD(lr=0.01)
 model = LeNet.build(width=28, height=28, depth=1, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
+N_EPOCH = 10
+
 print("[INFO] training network...")
 H = model.fit(x_train, y_train, validation_data=(x_test, y_test),
-              batch_size=128, epochs=20, verbose=1)
+              batch_size=128, epochs=N_EPOCH, verbose=1)
 
 print("[INFO] evaluating network...")
 pred = model.predict(x_test, batch_size=128)
@@ -49,5 +51,5 @@ print(classification_report(y_test.argmax(axis=1),
                             pred.argmax(axis=1),
                             target_names=[str(x) for x in np.arange(0, 10)]))
 
-hp = HistoryPlot(20)
+hp = HistoryPlot(N_EPOCH)
 hp.show(H)

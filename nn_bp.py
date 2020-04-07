@@ -1,4 +1,4 @@
-from pyimage.nn.neuralnetwor import NeuralNetwork
+from pyimage.nn.neuralnetwork import NeuralNetwork
 import numpy as np
 
 nn = NeuralNetwork([2, 2, 1])
